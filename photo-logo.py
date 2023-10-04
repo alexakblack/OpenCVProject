@@ -10,9 +10,9 @@ args = vars(ap.parse_args())
 image = cv2.imread(args["image"])
 twitter = cv2.imread("twitter-logo.png")
 twitter = cv2.cvtColor(twitter, cv2.COLOR_BGR2GRAY)
-#blurred = cv2.GaussianBlur(image, (5,5), 0)
-#cv2.imshow("Image", image)
-#cv2.waitKey(0)
+blurred = cv2.GaussianBlur(image, (5,5), 0)
+cv2.imshow("Image", image)
+cv2.waitKey(0)
 
 # -----------------------------------------------
 # Face Detection using DNN Net
@@ -29,7 +29,7 @@ def detectFaceOpenCVDnn(net, frame, conf_threshold=0.7):
     net.setInput(blob)
     detections = net.forward()
     bboxes = []
-    for i in range(detections.shape[2]):
+    for i in range(1):
         confidence = detections[0, 0, i, 2]
         if confidence > conf_threshold:
             x1 = int(detections[0, 0, i, 3] * frameWidth)
@@ -46,7 +46,7 @@ def detectFaceOpenCVDnn(net, frame, conf_threshold=0.7):
 
             #  blurry rectangle to the detected face
             face = frame[right:right+left, top:top+bottom]
-            face = cv2.GaussianBlur(face,(23, 23), 30)
+            print(face.shape)
             frame[right:right+face.shape[0], top:top+face.shape[1]] = face
 
     return face, bboxes
@@ -59,6 +59,7 @@ net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
 face, bboxes = detectFaceOpenCVDnn(net, image)
+print(face.shape)
 
 cv2.destroyAllWindows()
 cv2.imshow("DETECTED", face)
