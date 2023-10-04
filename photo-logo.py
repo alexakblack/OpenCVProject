@@ -1,6 +1,4 @@
 import numpy as np
-#https://gist.github.com/elbruno/2be864075b6c2dbef18e6a68530aa736/revisions
-#https://github.com/spmallick/learnopencv/tree/master/FaceDetectionComparison/models
 import argparse
 import cv2
 import time
@@ -10,12 +8,11 @@ ap.add_argument("-i", "--image", required = True, help = "Path to the image")
 args = vars(ap.parse_args())
 
 image = cv2.imread(args["image"])
-gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 twitter = cv2.imread("twitter-logo.png")
 twitter = cv2.cvtColor(twitter, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(image, (5,5), 0)
-cv2.imshow("Image", image)
-cv2.waitKey(0)
+#blurred = cv2.GaussianBlur(image, (5,5), 0)
+#cv2.imshow("Image", image)
+#cv2.waitKey(0)
 
 # -----------------------------------------------
 # Face Detection using DNN Net
@@ -62,31 +59,7 @@ net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
 face, bboxes = detectFaceOpenCVDnn(net, image)
-print("hello", face)
-# detectionEnabled = False
-# while True:
-#     try:
-#         _, frameOrig = image.read()
-#         frame = cv2.resize(frameOrig, (640, 480))
 
-#         if(detectionEnabled == True):
-#             outOpencvDnn, bboxes = detectFaceOpenCVDnn(net, image)
-
-#         cv2.imshow('ElBruno - Face Blur usuing DNN', image)
-
-#     except Exception as e:
-#         print(f'exc: {e}')
-#         pass
-
-#     # key controller
-#     key = cv2.waitKey(1) & 0xFF    
-#     if key == ord("d"):
-#         detectionEnabled = not detectionEnabled
-
-#     if key == ord("q"):
-#         break
-
-# video_capture.release()
 cv2.destroyAllWindows()
 cv2.imshow("DETECTED", face)
 
@@ -100,7 +73,6 @@ newMask = twittermask + blank
 slicedFace = cv2.resize(face, (300, 244), interpolation = cv2.INTER_AREA)
 cv2.imshow("newFace", slicedFace)
 
-print(twittermask.shape, slicedFace.shape)
 masked = cv2.bitwise_and(slicedFace, slicedFace, mask = twittermask)
 cv2.imshow("Mask Applied to Image", masked)
 cv2.waitKey(0)
