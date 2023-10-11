@@ -3,17 +3,6 @@ import argparse
 import cv2
 import time
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--image", required = True, help = "Path to the image")
-ap.add_argument("-i2", "--imagetwo", required = False, help = "Path to logo", default = "twitter-logo.png")
-args = vars(ap.parse_args())
-image = cv2.imread(args["image"])
-logo = cv2.imread(args["imagetwo"])
-logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(image, (5,5), 0)
-cv2.imshow("Image", image)
-cv2.waitKey(0)
-
 # -----------------------------------------------
 # Face Detection using DNN Net
 # -----------------------------------------------
@@ -48,6 +37,21 @@ def detectFaceOpenCVDnn(net, frame):
     return face, bboxes
 
 # load face detection model
+# get image and logo from command line
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--image", required = True, help = "Path to the image")
+ap.add_argument("-i2", "--imagetwo", required = False, help = "Path to logo", default = "twitter-logo.png")
+args = vars(ap.parse_args())
+image = cv2.imread(args["image"])
+logo = cv2.imread(args["imagetwo"])
+
+# convert logo to grayscale for masking
+logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
+# blurred = cv2.GaussianBlur(image, (5,5), 0)
+cv2.imshow("Image", image)
+cv2.waitKey(0)
+
+# pull dnn for face detection
 modelFile = "res10_300x300_ssd_iter_140000_fp16.caffemodel"
 configFile = "deploy.prototxt"
 net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
@@ -59,18 +63,21 @@ face, bboxes = detectFaceOpenCVDnn(net, image)
 cv2.destroyAllWindows()
 cv2.imshow("DETECTED", face)
 
+# turn logo image into mask
 logoMask = cv2.inRange(logo, 125, 255)
-print(logoMask.shape)
 cv2.imshow("mask", logoMask)
 cv2.waitKey(0)
 
+# add blank mask to logo mask to prevent errors with "empty mask space"
 height, width = logoMask.shape
 blank = np.zeros((height, width), dtype = "uint8")
 newMask = logoMask + blank
 
+# change resized face image into shape of mask 
 slicedFace = cv2.resize(face, (width, height), interpolation = cv2.INTER_AREA)
 cv2.imshow("newFace", slicedFace)
 
+# place mask over face image
 masked = cv2.bitwise_and(slicedFace, slicedFace, mask = logoMask)
 cv2.imshow("Mask Applied to Image", masked)
 cv2.waitKey(0)
