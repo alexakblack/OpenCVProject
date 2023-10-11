@@ -15,7 +15,7 @@ Chapters Used:
      - cv2.cvtColor()
   4. Chapter 8 - Blurring
      - Gaussian blur was used in earlier versions of my project but not the final version
-  5. Chapters 8, 9 and 10 and cv2.dnn()
+  5. Chapters 9, 10, and 11 and cv2.dnn()
      - Using cv2 dnn (deep nueral networks) there is built in edge detection and contouring
      - cv2.dnn.blobFromImage() uses thresholding, swapping of BGR values and resizing to create a 4-d version of the image
      - net.setInput(blob) sets the image as the new basis for the (deep neural) network (here using caffe)
